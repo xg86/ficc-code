@@ -1,0 +1,7 @@
+openVPN
+xin.guo/Passw0rd
+
+
+
+mstsc 192.168.2.125
+administrator/Win2008@125
