@@ -22,12 +22,17 @@ from mcpParamCurve import *
 
 #start = '2022-01-4 00:00:00'
 cutoff = '2023-11-1 00:00:00'
+
+nss_data_proc_path='C://git//ficc-code//nss-data-proc//'
+nss_data_path= 'C://git//ficc-code//nss-data//'
+
 #bond_codes = ["210203.IB", "190215.IB", "210205.IB", "210210.IB", "220205.IB",
  #             "220210.IB", "220215.IB", "220220.IB", "230205.IB", "210220.IB"]
 src_files = ['diff_gk.xlsx','diff_gz.xlsx','diff_nf.xlsx','diff_jc.xlsx']
 #src_files = ['diff_nf.xlsx']
 
-spread_file = 'E://meridian//债券//信号统计//NSS信号.xlsx'
+#spread_file = 'E://meridian//债券//信号统计//NSS信号.xlsx'
+spread_file = nss_data_path+'NSS信号.xlsx'
 spread_df = pd.read_excel(spread_file, sheet_name='bid-ask-spread')
 
 def get_half_life2(z_array: pd.Series):
@@ -130,7 +135,8 @@ def cal_zspread(newdf: DataFrame, yield_str: str, date_str: str, maturityDate_co
 
 def get_rv_signal(src_file: str):
     print("starting reading ")
-    request_file = 'D://git//strategy-repos-master//butterfly//nss-data//' + src_file
+    #request_file = 'D://git//strategy-repos-master//butterfly//nss-data//' + src_file
+    request_file = nss_data_path + src_file
     src_df = pd.read_excel(request_file)
     #src_df = src_df.drop('Yld', axis=1)
     #src_df = src_df.drop('TradeTime', axis=1)
@@ -147,7 +153,8 @@ def get_rv_signal(src_file: str):
     codes = src_df.Code.unique()
 
     filename= str(uuid.uuid4().hex) + "_RV_YTM_"+ src_file
-    writer = pd.ExcelWriter("D://git//strategy-repos-master//butterfly//nss-data-proc//"+filename)
+    #writer = pd.ExcelWriter("D://git//strategy-repos-master//butterfly//nss-data-proc//"+filename)
+    writer = pd.ExcelWriter(nss_data_proc_path+filename)
     print("codes length ", len(codes))
     for code in codes:
         if (len(code) <= 9 and code.endswith('IB')):
@@ -157,7 +164,7 @@ def get_rv_signal(src_file: str):
 
             #print("code is  ", code)
             newdf = newdf.tail(380)
-            if (len(newdf) <= 100):
+            if (len(newdf) <= 50):
                 continue
             #
             newdf=newdf.iloc[:-1, :]

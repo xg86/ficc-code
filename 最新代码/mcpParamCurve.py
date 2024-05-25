@@ -6,8 +6,8 @@ from mcp.enums import *
 from mcp.tools import *
 from dateutil.relativedelta import relativedelta
 
-from butterfly.original.zSpread_cal import zSpreadFsolve
-
+#from butterfly.original.zSpread_cal import zSpreadFsolve
+from zSpread_cal import zSpreadFsolve
 '''
 request_file= 'D://git//strategy-repos-master//butterfly//nss-data//curve-data.csv'
 df = pd.read_csv(request_file, encoding='utf-8')
@@ -18,8 +18,9 @@ dates =['2024-06-17 00:00:00','2024-06-16 00:00:00','2024-06-15 00:00:00']
 #[pd.to_datetime('2024-06-17 00:00:00')])
 print(nss_curve.Ytm(pd.to_datetime(dates)))
 '''
-file_path= 'D://git//strategy-repos-master//butterfly//nss-data//'
-src_files = ['diff_gk.xlsx','diff_gz.xlsx','diff_nf.xlsx','diff_jc.xlsx']
+#file_path= 'D://git//strategy-repos-master//butterfly//nss-data//'
+file_path= 'C://git//ficc-code//nss-data//'
+src_files = ['diff_gk.xlsx', 'diff_gz.xlsx', 'diff_nf.xlsx', 'diff_jc.xlsx']
 curve_categories = ['02', '00', '04', '03']
 
 #src_files = ['diff_gz.xlsx']

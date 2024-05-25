@@ -25,8 +25,12 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-start = '2021-01-4 00:00:00'
+start = '2021-05-20 00:00:00'
 cutoff = "2023-11-1 00:00:00"
+
+nss_data_proc_path='C://git//ficc-code//nss-data-proc//'
+nss_data_path= 'C://git//ficc-code//nss-data//'
+
 end = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
 # bond_codes = ["210203.IB", "190215.IB", "210205.IB", "210210.IB", "220205.IB",
 #             "220210.IB", "220215.IB", "220220.IB", "230205.IB", "210220.IB"]
@@ -34,10 +38,12 @@ src_files = ['每日-进出口债收盘历史.csv', '每日-国开债收盘历�
 curve_categories = ['03', '02', '04', '00']
 # src_files = ['每日-进出口债收盘历史.csv']
 
-spread_file = 'E://meridian//债券//信号统计//NSS信号.xlsx'
+#spread_file = 'E://meridian//债券//信号统计//NSS信号.xlsx'
+spread_file = nss_data_path+'NSS信号.xlsx'
 spread_df = pd.read_excel(spread_file, sheet_name='bid-ask-spread')
 
-static_file = 'D://git//strategy-repos-master//butterfly//nss-data//WIND_BOND.xlsx'
+#static_file = 'D://git//strategy-repos-master//butterfly//nss-data//WIND_BOND.xlsx'
+static_file = nss_data_path+'WIND_BOND.xlsx'
 static_df = pd.read_excel(static_file, sheet_name='Sheet1')
 
 
@@ -152,13 +158,15 @@ def cal_spread(newdf: DataFrame, yield_str: str, date_str: str, maturity_date: d
 
 def get_rv_signal(src_file: str, category: str):
     print("starting reading ")
-    request_file = 'D://git//strategy-repos-master//butterfly//nss-data//' + src_file
+    # request_file = 'D://git//strategy-repos-master//butterfly//nss-data//' + src_file
+    request_file = nss_data_path + src_file
     src_df = pd.read_csv(request_file)
     src_df['Code'] = src_df['代码']
     codes = src_df.Code.unique()
 
     filename = str(uuid.uuid4().hex) + "_CurveSpread_full_" + src_file + ".xlsx"
-    writer = pd.ExcelWriter("D://git//strategy-repos-master//butterfly//nss-data-proc//" + filename)
+    # writer = pd.ExcelWriter("D://git//strategy-repos-master//butterfly//nss-data-proc//"+filename)
+    writer = pd.ExcelWriter(nss_data_proc_path + filename)
     print("codes length ", len(codes))
     for code in codes:
         if (len(code) <= 9 and code.endswith('IB')):
