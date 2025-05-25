@@ -28,8 +28,8 @@ nss_data_path= 'C://git//ficc-code//nss-data//'
 
 #bond_codes = ["210203.IB", "190215.IB", "210205.IB", "210210.IB", "220205.IB",
  #             "220210.IB", "220215.IB", "220220.IB", "230205.IB", "210220.IB"]
-src_files = ['diff_gk.xlsx','diff_gz.xlsx','diff_nf.xlsx','diff_jc.xlsx']
-#src_files = ['diff_nf.xlsx']
+#src_files = ['diff_gk.xlsx','diff_gz.xlsx','diff_nf.xlsx','diff_jc.xlsx']
+src_files = ['diff_nf.xlsx']
 
 #spread_file = 'E://meridian//债券//信号统计//NSS信号.xlsx'
 spread_file = nss_data_path+'NSS信号.xlsx'

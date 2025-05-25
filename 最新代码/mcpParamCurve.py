@@ -20,11 +20,21 @@ print(nss_curve.Ytm(pd.to_datetime(dates)))
 '''
 #file_path= 'D://git//strategy-repos-master//butterfly//nss-data//'
 file_path= 'C://git//ficc-code//nss-data//'
-src_files = ['diff_gk.xlsx', 'diff_gz.xlsx', 'diff_nf.xlsx', 'diff_jc.xlsx']
-curve_categories = ['02', '00', '04', '03']
+#src_files = ['diff_gk.xlsx', 'diff_gz.xlsx', 'diff_nf.xlsx', 'diff_jc.xlsx']
+#curve_categories = ['02', '00', '04', '03']
 
-#src_files = ['diff_gz.xlsx']
-#curve_categories = ['00']
+src_files = ['diff_gz.xlsx']
+curve_categories = ['00']
+'''
+src_files = ['diff_gk.xlsx']
+curve_categories = ['02']
+
+src_files = ['diff_nf.xlsx']
+curve_categories = ['04']
+
+src_files = ['diff_jc.xlsx']
+curve_categories = ['03']
+'''
 
 one_day_rel = relativedelta(days=1)
 
@@ -117,7 +127,7 @@ def get_zspread(yld: float,
     #print(dirty_price)
 
     pay_dates = frb.PaymentDates()
-    #print(pay_dates)
+    print(pay_dates)
     pay_years = [get_years(relativedelta(pay_date, ref_date)) for pay_date in pd.to_datetime(pay_dates)]
     #print(pay_years)
 
@@ -130,13 +140,102 @@ def get_zspread(yld: float,
         #frb_zSpread= frb.ZSpread(yld, parametric_curve.getCurve())*10000
         #print(">>>>>>>>>>>> frb_zSpread %s " % (frb_zSpread))
         rates = parametric_curve.Ytm(pd.to_datetime(pay_dates))
+        #rate_discount_factor = parametric_curve.DiscountFactor(pd.to_datetime(pay_dates))
         zSpreadFsolver = zSpreadFsolve(dirty_price, cash_flows, pay_years, rates)
         #print(">>>>>>>>>>>> zSpreadF %s " % (zSpreadF))
         return zSpreadFsolver.zSpread_fsolve()*10000
     return 0
 
-cur_date = pd.to_datetime('2022-04-01 00:00:00') #2023/03/02
-mat_date = pd.to_datetime('2025-01-10 00:00:00') #2032/7/18
-mkt_yld = 0.02605
-bond_coupon= 0.0323
-#print(get_zspread(mkt_yld, cur_date, mat_date, bond_coupon, 1))
+def get_discount_factor(
+                ref_date: datetime,
+                bond_mat_date: datetime,
+                bond_coupon: float,
+                freq: int = Frequency.Annual,
+                category='00'):
+    frb = McpFixedRateBond({
+        'ValuationDate': ref_date.strftime('%Y/%m/%d'),
+        'MaturityDate': bond_mat_date.strftime('%Y/%m/%d'),
+        'Coupon': bond_coupon,
+        'Frequency': freq,
+        'DayCounter': DayCounter.ActActXTR,
+        #'Calendar': McpCalendar(),
+        #'FaceValue': 100,
+        #'IssueDate': '2020-05-12',
+        #'prevCpnDate': '2022-05-13',
+        #'lastCpnDate': '2023-11-13',
+        #'firstCouponDate': '2020-11-13',
+        #'dateAdjuster': 5,
+        #'endToEnd': True,
+        #'longStub': False,
+       # 'endStub': False,
+        #'applyDayCount': False
+        })
+    #dirty_price = frb.DirtyPriceFromYieldCHN(yld, True)
+    #print(dirty_price)
+
+    pay_dates = frb.PaymentDates()
+    print(pay_dates)
+    #pay_years = [get_years(relativedelta(pay_date, ref_date)) for pay_date in pd.to_datetime(pay_dates)]
+    #print(pay_years)
+
+    #cash_flows = frb.Payments()
+    #print(cash_flows)
+    print(">>>>>>>>>>>> cur_date %s " % (cur_date))
+    parametric_curve = get_gcb_pc_curve(ref_date, category)
+    if parametric_curve != None:
+        for mDate in pay_dates:
+            print(mDate)
+            rate_discount_factor = parametric_curve.wrapper.DiscountFactor(mDate)
+            print(rate_discount_factor)
+    return 0
+
+cur_date = pd.to_datetime('2025-03-24 00:00:00') #2023/03/02
+mat_date = pd.to_datetime('2027-09-13 00:00:00') #2032/7/18
+mkt_yld = 0.01739
+bond_coupon= 0.0167
+
+print('get_zspread')
+print(get_zspread(mkt_yld, cur_date, mat_date, bond_coupon, 1))
+#print('get_discount_factor')
+#print(get_discount_factor(cur_date, mat_date, bond_coupon, 1))
+
+#today = pd.to_datetime('2025-03-24 00:00:00') #2032/7/18
+'''
+ref_dates =['2025-01-14',
+             '2025-01-14',
+             '2025-02-19',
+             '2025-02-06',
+             '2025-01-09',
+             '''
+ref_dates =[
+'2025-03-06',
+'2025-01-15',
+'2025-01-06'
+             ]
+
+'''
+mat_dates = ['2029-07-15',
+             '2034-05-25',
+             '2031-09-15',
+             '2027-09-13',
+             '2029-09-03',
+ '''
+mat_dates = [
+'2035-01-03',
+'2027-06-16',
+'2027-01-05'
+             ]
+'''
+today = pd.to_datetime('2025-03-24 00:00:00') #2032/7/18
+parametric_curve = get_gcb_pc_curve(pd.to_datetime(today), '02')
+mat_date2 = '2029-09-3 00:00:00'
+#curr_date_nf_yield = parametric_curve.wrapper.ZeroRate(mat_date2)
+curr_date_nf_yield = parametric_curve.Ytm(pd.to_datetime(mat_dates))
+print(curr_date_nf_yield)
+
+for mat_date, today in zip(mat_dates,ref_dates):
+    parametric_curve = get_gcb_pc_curve(pd.to_datetime(today), '02')
+    curr_date_gcb_yield = parametric_curve.wrapper.ZeroRate(mat_date)
+#print(curr_date_gcb_yield)
+    print(f"today {today}, mat_date {mat_date}, curr_date_gcb_yield is: {curr_date_gcb_yield * 1_00:.4f}")
+'''

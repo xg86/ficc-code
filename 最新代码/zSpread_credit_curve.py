@@ -38,7 +38,7 @@ today_str = '2024-09-13 00:00:00'
 today = pd.to_datetime(today_str)
 
 def cal_zspread(newdf: DataFrame, yield_str: str, date_str: str, maturity_date: datetime, coupon: float, freq: int):
-    return get_zspread(newdf[yield_str]/100, newdf[date_str], maturity_date, coupon/100, freq, '02')
+    return get_zspread(newdf[yield_str]/100, newdf[date_str], maturity_date, coupon/100, freq, '00')
 
 def get_zSpread(src_file: str):
     print("starting reading ")
@@ -69,7 +69,7 @@ def get_zSpread(src_file: str):
             newdf['freq'] = freq
             #print(">>>>>>>>>>>> pnl maturity_date %s, coupon %s, freq %s" % (maturity_date, coupon, freq))
             newdf['zSpread'] = newdf.apply(cal_zspread, args=('Yield', 'Date', maturity_date, coupon, freq), axis=1)
-            parametric_curve =get_gcb_pc_curve(pd.to_datetime(newdf['Date'].iloc[0]), '02')
+            parametric_curve =get_gcb_pc_curve(pd.to_datetime(newdf['Date'].iloc[0]), '00')
             gcb_yield = parametric_curve.Ytm(pd.to_datetime(newdf['MATURITYDATE']))
             print(gcb_yield)
             newdf['trading_date_gcb_yield'] = gcb_yield[0] * 100
@@ -89,7 +89,7 @@ def get_zSpread(src_file: str):
 
     result_df['nss_diff'] = result_df['nss_curve_spread'] - result_df['zSpread']
     result_df['ns_diff'] = result_df['ns_curve_spread'] - result_df['zSpread']
-    parametric_curve = get_gcb_pc_curve(today, '02')
+    parametric_curve = get_gcb_pc_curve(today, '00')
     curr_date_gcb_yield = parametric_curve.Ytm(pd.to_datetime(result_df['MATURITYDATE']))
     result_df['curr_date_gcb_yield'] = pd.Series(curr_date_gcb_yield) * 100
     result_df['diff_gcb_yield'] = result_df['curr_date_gcb_yield'] - result_df['trading_date_gcb_yield']
